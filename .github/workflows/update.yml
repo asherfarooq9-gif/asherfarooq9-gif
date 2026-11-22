@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
       - run: python scripts/fetch_contributions.py
-        env: {GH_TOKEN: "${{ secrets.PROFILE_TOKEN }}", GH_USER: asherfarooq9-gif}
+        env: {GH_TOKEN: "${{ secrets.PROFILE_TOKEN || secrets.GITHUB_TOKEN }}", GH_USER: asherfarooq9-gif}
       - run: python scripts/render_readme_cards.py
       - run: |
           git config user.name github-actions
