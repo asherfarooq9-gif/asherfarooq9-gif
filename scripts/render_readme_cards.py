@@ -78,10 +78,52 @@ for i, (n, c, lab, ttl, sub, big) in enumerate(tiles):
     save(n, wrap(TW, 200, body, swing))
 print("ok", total, streak, active)
 
-repos=[("windows-notch","Notch app for Windows","windows-notch",BLUE),("smartride-nemt","AI medical transport system","smartride-nemt",RED),("PAK-LEX-V2","Pakistan Constitution Q&A bot","pak-lex-v2",YEL)]
-rp="@keyframes rs{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}.r{opacity:0;animation:rs .7s ease forwards}"
-for i,(n,d,f,c) in enumerate(repos):
-    b=(f'<g class="r" style="animation-delay:{2.2+i*.2}s"><rect x="1" y="1" width="{TW-2}" height="118" rx="14" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
-       f'<rect x="24" y="26" width="10" height="10" rx="2" fill="{c}"/><text x="42" y="36" font-size="15" font-weight="700" fill="{INK}">{n}</text>'
-       f'<text x="24" y="70" font-size="14" fill="{MUTE}">{d}</text><text x="24" y="100" font-size="13" fill="{INK}">View repo →</text></g>')
-    save("repo-"+f, wrap(TW,120,b,rp))
+
+# ---- categorized projects ----
+import re
+U = "https://github.com/asherfarooq9-gif/"
+CATS = [
+ ("apps", "01", "FEATURED APPS", BLUE, [
+  ("smartride-nemt", "AI medical transport platform.", "Flutter, FastAPI, ML models.", "Dart"),
+  # Add when repo exists: ("VitaFit", "Line one.", "Line two.", "Stack"),
+  ("windows-notch", "Dynamic Island style notch", "for Windows. Voice assistant.", "Electron")]),
+]
+rp = "@keyframes rs{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}.r{opacity:0;animation:rs .7s ease forwards}"
+def slug(n): return re.sub(r"[^a-z0-9]+", "-", n.lower()).strip("-")
+def esc(t): return t.replace("&", "&amp;")
+k = 0
+for cid, num, title, c, items in CATS:
+    cnt = len(items)
+    hd = (f'<rect width="{W}" height="64" rx="14" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
+          f'<rect x="24" y="26" width="12" height="12" rx="3" fill="{c}"/>'
+          f'<text x="48" y="38" font-size="14" letter-spacing="3" font-weight="700" fill="{INK}">{esc(title)}</text>'
+          f'<text x="{W-24}" y="38" font-size="13" letter-spacing="2" text-anchor="end" fill="{MUTE}">{num} · {cnt} PROJECT{"S" if cnt>1 else ""}</text>')
+    save("cat-" + cid, wrap(W, 64, hd, rp.replace(".r{", ".rr{")))
+    for n, d1, d2, tech in items:
+        nm = n if len(n) <= 26 else n[:25] + "…"
+        b = (f'<g class="r" style="animation-delay:{1.6+k*.12:.2f}s"><rect x="1" y="1" width="{TW-2}" height="118" rx="14" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
+             f'<rect x="24" y="26" width="10" height="10" rx="2" fill="{c}"/>'
+             f'<text x="42" y="36" font-size="14" font-weight="700" fill="{INK}">{esc(nm)}</text>'
+             f'<text x="24" y="62" font-size="13" fill="{MUTE}">{esc(d1)}</text>'
+             f'<text x="24" y="80" font-size="13" fill="{MUTE}">{esc(d2)}</text>'
+             f'<text x="24" y="104" font-size="12" font-weight="700" fill="{INK}">{esc(tech)}</text>'
+             f'<text x="{TW-24}" y="104" font-size="12" text-anchor="end" fill="{INK}">View →</text></g>')
+        save("repo-" + slug(n), wrap(TW, 120, b, rp)); k += 1
+# "more" tile
+mb = (f'<g class="r" style="animation-delay:2.4s"><rect x="1" y="1" width="{TW-2}" height="118" rx="14" fill="none" stroke="{INK}" stroke-width="2" stroke-dasharray="6 6"/>'
+      f'<text x="24" y="66" font-size="14" font-weight="700" fill="{INK}">All repositories</text>'
+      f'<text x="24" y="88" font-size="13" fill="{MUTE}">Browse everything on GitHub →</text></g>')
+save("repo-more", wrap(TW, 120, mb, rp))
+
+# tech stack strip
+stack = ["Python", "LangChain", "LangGraph", "FastAPI", "ChromaDB", "PyTorch", "Flutter", "Next.js", "React", "TypeScript", "Electron", "Docker"]
+chips = ""; x = 30; y = 46
+for t in stack:
+    w = 16 + len(t) * 8
+    if x + w > W - 30: x = 30; y += 40
+    chips += (f'<g class="r" style="animation-delay:{1.4+stack.index(t)*.06:.2f}s"><rect x="{x}" y="{y}" width="{w}" height="30" rx="15" fill="none" stroke="{INK}" stroke-width="1.5"/>'
+              f'<text x="{x+w/2}" y="{y+20}" font-size="13" text-anchor="middle" fill="{INK}">{t}</text></g>')
+    x += w + 10
+SH = y + 30 + 24
+save("stack", wrap(W, SH, f'<rect width="{W}" height="{SH}" rx="14" fill="{PAPER}" stroke="{INK}" stroke-width="2"/>'
+     f'<text x="30" y="30" font-size="13" letter-spacing="3" fill="{MUTE}">TOOLS I WORK WITH</text>' + chips, rp))
